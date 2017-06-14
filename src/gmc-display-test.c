@@ -97,9 +97,10 @@ list_modes (CcDisplayMonitor *monitor)
       refresh_rate = cc_display_mode_get_refresh_rate (mode);
       preferred_scale = cc_display_mode_get_preferred_scale (mode);
 
-      g_print ("  %dx%d@%g [preferred scale = %g (",
+      g_print ("  %dx%d@%g [id: '%s'] [preferred scale = %g (",
                resolution_width, resolution_height,
                refresh_rate,
+               cc_display_mode_get_id (mode),
                preferred_scale);
 
       supported_scales =
@@ -424,20 +425,9 @@ static gboolean
 handle_mode_arg (const char *optarg,
                  GError **error)
 {
-  int64_t mode_index;
-  GList *modes;
   CcDisplayMode *mode;
   GList *monitor_configs;
   CcDisplayMonitorConfig *monitor_config;
-
-  errno = 0;
-  mode_index = g_ascii_strtoll (optarg, NULL, 10);
-  if (errno || mode_index > INT32_MAX || mode_index < INT32_MIN)
-  {
-    g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                 "Invalid x value %s", optarg);
-    return FALSE;
-  }
 
   if (!current_monitor)
   {
@@ -446,8 +436,13 @@ handle_mode_arg (const char *optarg,
     return FALSE;
   }
 
-  modes = cc_display_monitor_get_modes (current_monitor);
-  mode = g_list_nth_data (modes, mode_index);
+  mode = cc_display_monitor_lookup_mode (current_monitor, optarg);
+  if (!mode)
+  {
+    g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                 "Invalid mode '%s'", optarg);
+    return FALSE;
+  }
 
   monitor_configs =
     cc_display_logical_monitor_config_get_monitor_configs (pending_logical_monitor_config);

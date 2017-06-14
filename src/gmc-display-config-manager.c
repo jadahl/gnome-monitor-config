@@ -118,16 +118,12 @@ create_monitors_config_variant (CcDisplayState *state,
           CcDisplayMonitor *monitor;
           CcDisplayMode *mode;
           const char *connector;
-          int resolution_width;
-          int resolution_height;
-          double refresh_rate;
+          const char *mode_id;
 
           monitor = cc_display_monitor_config_get_monitor (monitor_config);
           connector = cc_display_monitor_get_connector (monitor);
           mode = cc_display_monitor_config_get_mode (monitor_config);
-          cc_display_mode_get_resolution (mode,
-                                          &resolution_width, &resolution_height);
-          refresh_rate = cc_display_mode_get_refresh_rate (mode);
+          mode_id = cc_display_mode_get_id (mode);
 
           if (!scale_calculated)
             {
@@ -140,9 +136,7 @@ create_monitors_config_variant (CcDisplayState *state,
 
           g_variant_builder_add (&monitor_configs_builder, MONITOR_CONFIG_FORMAT,
                                  connector,
-                                 (int32_t) resolution_width,
-                                 (int32_t) resolution_height,
-                                 refresh_rate,
+                                 mode_id,
                                  NULL);
         }
 

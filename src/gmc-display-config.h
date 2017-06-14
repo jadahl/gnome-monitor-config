@@ -75,6 +75,8 @@ gboolean cc_display_state_get_max_screen_size (CcDisplayState *state,
 double *
 cc_display_mode_get_supported_scales (CcDisplayMode *mode,
 				      int *n_supported_scales);
+const char *
+cc_display_mode_get_id (CcDisplayMode *mode);
 
 GList * cc_display_logical_monitor_get_monitors (CcDisplayLogicalMonitor *logical_monitor);
 bool cc_display_logical_monitor_is_primary (CcDisplayLogicalMonitor *logical_monitor);
@@ -91,6 +93,8 @@ const char * cc_display_monitor_get_display_name (CcDisplayMonitor *monitor);
 bool cc_display_monitor_supports_underscanning (CcDisplayMonitor *monitor);
 bool cc_display_monitor_is_underscanning (CcDisplayMonitor *monitor);
 
+CcDisplayMode * cc_display_monitor_lookup_mode (CcDisplayMonitor *monitor,
+						const char *mode_id);
 GList * cc_display_monitor_get_modes (CcDisplayMonitor *monitor);
 CcDisplayMode * cc_display_monitor_get_current_mode (CcDisplayMonitor *monitor);
 CcDisplayMode * cc_display_monitor_get_preferred_mode (CcDisplayMonitor *monitor);

@@ -30,6 +30,7 @@
 
 typedef struct _CcDisplayMode
 {
+  char *id;
   int resolution_width;
   int resolution_height;
   double refresh_rate;
@@ -140,6 +141,29 @@ cc_display_monitor_get_modes (CcDisplayMonitor *monitor)
   return monitor->modes;
 }
 
+CcDisplayMode *
+cc_display_monitor_lookup_mode (CcDisplayMonitor *monitor,
+                                const char *mode_id)
+{
+  GList *l;
+
+  for (l = monitor->modes; l; l = l->next)
+    {
+      CcDisplayMode *mode = l->data;
+
+      if (g_str_equal (mode->id, mode_id))
+        return mode;
+    }
+
+  return NULL;
+}
+
+const char *
+cc_display_mode_get_id (CcDisplayMode *mode)
+{
+  return mode->id;
+}
+
 void
 cc_display_mode_get_resolution (CcDisplayMode *mode,
                                 int *width,
@@ -159,6 +183,13 @@ double
 cc_display_mode_get_preferred_scale (CcDisplayMode *mode)
 {
   return mode->preferred_scale;
+}
+
+static void
+cc_display_mode_free (CcDisplayMode *mode)
+{
+  g_free (mode->id);
+  g_free (mode);
 }
 
 unsigned int
@@ -192,7 +223,8 @@ cc_display_state_get_max_screen_size (CcDisplayState *state,
   return TRUE;
 }
 
-#define MODE_FORMAT "(iiddadu)"
+#define MODE_BASE_FORMAT "siiddad"
+#define MODE_FORMAT "(" MODE_BASE_FORMAT "a{sv})"
 #define MODES_FORMAT "a" MODE_FORMAT
 #define MONITOR_SPEC_FORMAT "(ssss)"
 #define MONITOR_FORMAT "(" MONITOR_SPEC_FORMAT MODES_FORMAT "@a{sv})"
@@ -205,26 +237,30 @@ static CcDisplayMode *
 cc_display_mode_new_from_variant (GVariant *mode_variant)
 {
   CcDisplayMode *mode;
-  uint32_t flags;
+  char *mode_id;
   int32_t resolution_width;
   int32_t resolution_height;
   double refresh_rate;
   double preferred_scale;
   GVariantIter *supported_scales_iter;
   GVariant *scale_variant;
+  GVariant *properties_variant;
+  gboolean is_current;
+  gboolean is_preferred;
   int i = 0;
 
-  g_variant_get (mode_variant, MODE_FORMAT,
+  g_variant_get (mode_variant, "(" MODE_BASE_FORMAT "@a{sv})",
+                 &mode_id,
                  &resolution_width,
                  &resolution_height,
                  &refresh_rate,
                  &preferred_scale,
 		 &supported_scales_iter,
-                 &flags);
+                 &properties_variant);
 
   mode = g_new0 (CcDisplayMode, 1);
   *mode = (CcDisplayMode) {
-    .flags = flags,
+    .id = mode_id,
     .resolution_width = resolution_width,
     .resolution_height = resolution_height,
     .refresh_rate = refresh_rate,
@@ -240,6 +276,19 @@ cc_display_mode_new_from_variant (GVariant *mode_variant)
       g_variant_get (scale_variant, "d", &scale);
       mode->supported_scales[i++] = scale;
     }
+
+  if (!g_variant_lookup (properties_variant, "is-current", "b", &is_current))
+    is_current = FALSE;
+  if (!g_variant_lookup (properties_variant, "is-preferred", "b", &is_preferred))
+    is_preferred = FALSE;
+
+  if (is_current)
+    mode->flags |= CC_DBUS_DISPLAY_CONFIG_MODE_FLAGS_CURRENT;
+  if (is_preferred)
+    mode->flags |= CC_DBUS_DISPLAY_CONFIG_MODE_FLAGS_PREFERRED;
+
+  g_variant_iter_free (supported_scales_iter);
+  g_variant_unref (properties_variant);
 
   return mode;
 }
@@ -535,7 +584,7 @@ get_current_state (CcDisplayState *state,
 static void
 cc_display_monitor_free (CcDisplayMonitor *monitor)
 {
-  g_list_free_full (monitor->modes, g_free);
+  g_list_free_full (monitor->modes, (GDestroyNotify) cc_display_mode_free);
   g_free (monitor);
 }
 
