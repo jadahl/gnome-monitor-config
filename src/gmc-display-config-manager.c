@@ -21,6 +21,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "gmc-display-config.h"
 #include "gmc-dbus-display-config.h"
@@ -46,13 +47,42 @@ cc_display_config_manager_new_current_state (CcDisplayConfigManager *manager,
   return cc_display_state_new_current (manager->proxy, error);
 }
 
-#define MONITOR_MODE_SPEC_FORMAT "(iid)"
-#define MONITOR_CONFIG_FORMAT "(s" MONITOR_MODE_SPEC_FORMAT "a{sv})"
+#define MONITOR_CONFIG_FORMAT "(ssa{sv})"
 #define MONITOR_CONFIGS_FORMAT "a" MONITOR_CONFIG_FORMAT
 
 #define LOGICAL_MONITOR_CONFIG_FORMAT "(iidub" MONITOR_CONFIGS_FORMAT ")"
 
 #define CONFIG_FORMAT "a" LOGICAL_MONITOR_CONFIG_FORMAT
+
+static double
+find_nearest_scale (CcDisplayMonitor *monitor,
+                    CcDisplayMode *mode,
+                    double configured_scale)
+{
+  double *supported_scales;
+  int n_supported_scales;
+  int i;
+  double closest_scale = 0.0;
+  double closest_scale_diff = DBL_MAX;
+
+  supported_scales =
+    cc_display_mode_get_supported_scales (mode, &n_supported_scales);
+
+  for (i = 0; i < n_supported_scales; i++)
+    {
+      double scale = supported_scales[i];
+      double scale_diff;
+
+      scale_diff = fabs (configured_scale - scale);
+      if (scale_diff < closest_scale_diff)
+        {
+          closest_scale_diff = scale_diff;
+          closest_scale = scale;
+        }
+    }
+
+  return closest_scale;
+}
 
 static GVariant *
 create_monitors_config_variant (CcDisplayState *state,
@@ -73,6 +103,7 @@ create_monitors_config_variant (CcDisplayState *state,
       GList *monitor_configs;
       GList *k;
       int x, y;
+      bool scale_calculated = false;
       double scale;
       CcDisplayTransform transform;
       gboolean is_primary;
@@ -98,6 +129,15 @@ create_monitors_config_variant (CcDisplayState *state,
                                           &resolution_width, &resolution_height);
           refresh_rate = cc_display_mode_get_refresh_rate (mode);
 
+          if (!scale_calculated)
+            {
+              double configured_scale =
+                cc_display_logical_monitor_config_get_scale (logical_monitor_config);
+
+              scale = find_nearest_scale (monitor, mode, configured_scale);
+              scale_calculated = true;
+            }
+
           g_variant_builder_add (&monitor_configs_builder, MONITOR_CONFIG_FORMAT,
                                  connector,
                                  (int32_t) resolution_width,
@@ -108,8 +148,6 @@ create_monitors_config_variant (CcDisplayState *state,
 
       cc_display_logical_monitor_config_get_position (logical_monitor_config,
                                                       &x, &y);
-      scale =
-        cc_display_logical_monitor_config_get_scale (logical_monitor_config);
       transform =
         cc_display_logical_monitor_config_get_transform (logical_monitor_config);
       is_primary =
