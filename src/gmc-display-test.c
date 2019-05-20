@@ -344,6 +344,10 @@ handle_logical_monitor_property_arg (int option,
           {
             transform = CC_DISPLAY_TRANSFORM_90;
           }
+        else if (g_str_equal (value, "flip"))
+          {
+            transform = CC_DISPLAY_TRANSFORM_180;
+          }
         else
           {
             g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
