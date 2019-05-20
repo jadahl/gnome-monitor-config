@@ -66,6 +66,7 @@ print_help (void)
           " -x, --x=X                   Set x position of newly added logical monitor\n"
           " -y, --y=Y                   Set y position of newly added logical monitor\n"
           " -s, --scale=SCALE           Set scale of newly added logical monitor\n"
+          " -t, --transform=TRANSFORM   Set transform (normal, left, right, flip)\n"
           " -p, --primary               Mark the newly added logical monitor as primary\n"
           " -M, --monitor=CONNECTOR     Add a monitor (given its connector) to newly added\n"
           "                             logical monitor\n"
@@ -517,6 +518,7 @@ set_monitors (int argc,
     { "x", required_argument, 0, 'x' },
     { "y", required_argument, 0, 'y' },
     { "scale", required_argument, 0, 's' },
+    { "transform", required_argument, 0, 't' },
     { "primary", no_argument, 0, 'p' },
     { "monitor", required_argument, 0, 'M' },
     { "mode", required_argument, 0, 'm' },
