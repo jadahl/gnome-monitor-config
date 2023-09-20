@@ -68,8 +68,12 @@ print_help (void)
           " -s, --scale=SCALE           Set scale of newly added logical monitor\n"
           " -t, --transform=TRANSFORM   Set transform (normal, left, right, flip)\n"
           " -p, --primary               Mark the newly added logical monitor as primary\n"
+          " -m, --mode                  Set the display resolution and refresh rate. ex: 1920x1080@60\n"
           " -M, --monitor=CONNECTOR     Add a monitor (given its connector) to newly added\n"
           "                             logical monitor\n"
+          " -p, --primary               Mark the newly added logical monitor as primary\n"
+          " --logical-layout-mode       Set logical layout mode\n"
+          " --physical-layout-mode      Set physical layout mode\n"
           );
 }
 
