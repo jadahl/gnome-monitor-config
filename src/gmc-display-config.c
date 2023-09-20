@@ -617,8 +617,8 @@ cc_display_mode_get_supported_scales (CcDisplayMode *mode,
                                       int           *n_supported_scales)
 {
   *n_supported_scales = mode->n_supported_scales;
-  return g_memdup (mode->supported_scales,
-                   sizeof (double) * mode->n_supported_scales);
+  return g_memdup2 (mode->supported_scales,
+                    sizeof (double) * mode->n_supported_scales);
 }
 
 CcDisplayMonitor *
