@@ -36,7 +36,8 @@ Options for 'set':
  -m, --mode                  Set the display resolution and refresh rate. ex: 1920x1080@60
  -M, --monitor=CONNECTOR     Add a monitor (given its connector) to newly added
                              logical monitor
- -p, --primary               Mark the newly added logical monitor as primary
+ -P, --persistent            Set the configuration as persistent
+ -V, --verify                Set the configuration as persistent and skip verification dialogue
  --logical-layout-mode       Set logical layout mode
  --physical-layout-mode      Set physical layout mode
 ```
