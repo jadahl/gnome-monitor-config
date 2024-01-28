@@ -71,7 +71,8 @@ print_help (void)
           " -m, --mode                  Set the display resolution and refresh rate. ex: 1920x1080@60\n"
           " -M, --monitor=CONNECTOR     Add a monitor (given its connector) to newly added\n"
           "                             logical monitor\n"
-          " -p, --primary               Mark the newly added logical monitor as primary\n"
+          " -P, --persistent            Set the configuration as persistent\n"
+          " -V, --verify                Set the configuration as persistent and skip verification dialogue\n"
           " --logical-layout-mode       Set logical layout mode\n"
           " --physical-layout-mode      Set physical layout mode\n"
           );
@@ -523,6 +524,7 @@ set_monitors (int argc,
   struct option options[] = {
     { "logical-monitor", no_argument, 0, 'L' },
     { "persistent", no_argument, 0, 'P' },
+    { "verify", no_argument, 0, 'V' },
     { "x", required_argument, 0, 'x' },
     { "y", required_argument, 0, 'y' },
     { "scale", required_argument, 0, 's' },
@@ -588,6 +590,9 @@ set_monitors (int argc,
 
         case 'P':
           method = CC_DISPLAY_METHOD_PERSISTENT;
+          break;
+        case 'V':
+          method = CC_DISPLAY_METHOD_VERIFY;
           break;
 
         case 'x':
