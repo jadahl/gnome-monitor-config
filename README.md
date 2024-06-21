@@ -72,7 +72,7 @@ Similarly, to setup multple monitors. First use the `list` command to get a
 list of what is available, then simply:
 
 ```shell
-$ gnome-monitor-config set -LM DP-3 -m 2560x1440@143.912 -t left -LpM DP-1 -m 3840x1600@143.998 -x 1440 -y 270 -t normal 
+$ gnome-monitor-config set -LM DP-3 -m 2560x1440@143.912 -t left -LpM DP-1 -m 3840x1600@143.998 -x 1440 -y 270 -t normal
 ```
 
 This command sets the monitor attached to DP-3 at the starting point [0, 0],
