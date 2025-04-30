@@ -1,3 +1,10 @@
+# Deprecated
+
+This utility is effectively replaced by the upstream `gdctl` (GNOME Display
+Control) utility, released as part of GNOME 47.
+
+See https://gitlab.gnome.org/GNOME/mutter/-/blob/main/tools/gdctl.
+
 # Building
 
 The following steps can be used to build `gnome-monitor-config`
