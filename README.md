@@ -3,7 +3,7 @@
 This utility is effectively replaced by the upstream `gdctl` (GNOME Display
 Control) utility, released as part of GNOME 47.
 
-See https://gitlab.gnome.org/GNOME/mutter/-/blob/main/tools/gdctl.
+See https://gitlab.gnome.org/GNOME/mutter/-/blob/main/doc/man/gdctl.rst.
 
 # Building
 
