@@ -14,7 +14,7 @@ The output binary can be found in `build/src/gnome-monitor-config`.
 
 For usage details, run
 
-```shell
+```
 $ ./gnome-monitor-config --help
 
 Usage: ./src/gnome-monitor-config [OPTIONS...] COMMAND [COMMAND OPTIONS...]
