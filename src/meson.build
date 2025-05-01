@@ -18,5 +18,5 @@ gen_src = gnome.gdbus_codegen('gmc-dbus-display-config',
                               namespace: 'CcDbus')
 src += gen_src
 
-executable('gnome-monitor-config', src,
+executable('gnome-monitor-config', src, install : true,
            dependencies : [ glib, gio, gio_unix, cairo ])
