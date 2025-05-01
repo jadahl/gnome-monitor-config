@@ -25,6 +25,12 @@
 
 #include <stdio.h>
 
+#if GLIB_CHECK_VERSION(2, 68, 0)
+#else
+#define g_memdup2(ptr,sz) (G_LIKELY(((guint64)(sz)) < G_MAXUINT)) ? g_memdup(ptr,sz) : (g_abort(),NULL)
+#endif
+
+
 #define CC_DBUS_DISPLAY_CONFIG_MODE_FLAGS_PREFERRED (1 << 0)
 #define CC_DBUS_DISPLAY_CONFIG_MODE_FLAGS_CURRENT (1 << 1)
 
